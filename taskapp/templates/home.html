@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task-Point</title>
+</head>
+<script src="https://kit.fontawesome.com/c04ff74144.js" crossorigin="anonymous"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #dfe6ed;
+    }
+
+    .text {
+        margin-top: 0;
+        padding: 20px;
+        text-align: center;
+        background-color: #f0f2f5;
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .sidebar {
+        padding-top: 40px;
+        padding-left: 30px;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar ul li {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+
+    }
+    .sidebar ul .active{
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+        background-color: #6558f5;
+    }
+    .sidebar ul li .link{
+        color: white;
+    }
+
+    .sidebar ul li a {
+        text-decoration: none;
+        color: #6558f5;
+        font-size: 18px;
+        padding: 30px;
+    }
+
+    .fa-solid {
+        padding-right: 5px;
+    }
+    .main {
+        padding-left: 50px;
+        margin-left: 150px;
+        margin-top: 40px;
+        margin-right: 40px;
+        flex-grow: 1;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        height: 750px;
+        overflow-y: auto;
+    }
+    .content{
+        background-color:#dfe6ed ;
+        height: 150px;
+        margin-right: 40px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border: solid 1px black;
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+    .content img{
+        width: 145px;
+        height: 150px;
+    }
+    .pointval{
+        margin-top: 50px;
+        width: 160px;
+        height: 50px;
+        background-color: #8dd7cf;
+        border: solid 1px #2bb3a5;
+        text-align: center;
+    }
+    .textval{
+        margin: 20px;
+    }
+    .textval a{
+        color: #6558f5;
+    }
+
+</style>
+
+<body>
+    <h3 class="text">Hello {{userdata.name}}</h1>
+        <div class="container">
+            <div class="sidebar">
+                <ul>
+                    <li class="active"><a href="{% url 'Home' userdata.userid %}" class="link"><i class="fa-solid fa-house"></i>Home</a></li>
+                    <li><a href="{% url 'Profile' userdata.userid %}"><i class="fa-solid fa-user"></i>Profile</a></li>
+                    <li><a href="{% url 'Point' userdata.userid %}"><i class="fa-solid fa-coins"></i>Points</a></li>
+                    <li><a href="{% url 'Task' userdata.userid %}"><i class="fa-solid fa-calendar-check"></i>Task</a></li>
+                    <li><a href="{% url 'Index' %}"><i class="fa-solid fa-power-off"></i>Logout</a></li>
+                </ul>
+            </div>
+            <div class="main">
+                {% for value in data %}
+                <div class="content">
+                    <img src="{{ value.appIcon }}" alt="">
+                    <div class="textval">
+                        <h2>{{value.appName}}</h2>
+                        <a href="{% url 'Detail'  value.appid userdata.userid  %}">View in Details<i class="fa-solid fa-angle-right"></i></a>
+                    </div>
+                    <div class="pointval">
+                        <h3>{{value.points}} POINTS</h3>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+</body>
+
+
+</html>

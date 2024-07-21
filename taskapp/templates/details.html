@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task-Point</title>
+</head>
+<script src="https://kit.fontawesome.com/c04ff74144.js" crossorigin="anonymous"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #dfe6ed;
+    }
+
+    .text {
+        margin-top: 0;
+        padding: 20px;
+        text-align: center;
+        background-color: #f0f2f5;
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .sidebar {
+        padding-top: 40px;
+        padding-left: 30px;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar ul li {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+
+    }
+
+    .sidebar ul .active {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+        background-color: #6558f5;
+    }
+
+    .sidebar ul li .link {
+        color: white;
+    }
+
+    .sidebar ul li a {
+        text-decoration: none;
+        color: #6558f5;
+        font-size: 18px;
+        padding: 30px;
+    }
+
+    .fa-solid {
+        padding-right: 5px;
+    }
+
+    .main {
+        margin-left: 150px;
+        margin-top: 40px;
+        margin-right: 40px;
+        flex-grow: 1;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        height: 750px;
+    }
+
+    .section {
+        margin: 30px;
+        background-color: #dfe6ed;
+        width: 1485px;
+        height: 690px;
+        display: grid;
+        row-gap: 20px;
+        align-items: center;
+    }
+
+    .content {
+        height: 150px;
+        margin-right: 40px;
+        margin-top: 40px;
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    .content img {
+        width: 145px;
+        height: 150px;
+        padding-left: 100px;
+    }
+
+    .pointval {
+        margin-top: 50px;
+        width: 160px;
+        height: 50px;
+        background-color: #8dd7cf;
+        border: solid 1px #2bb3a5;
+        text-align: center;
+    }
+
+    .textval {
+        margin-top: 20px;
+        margin-right: 10px;
+    }
+
+    .textval a {
+        color: #6558f5;
+    }
+
+    #drop_area {
+        width: 500px;
+        height: 345px;
+        margin: 20px auto;
+        text-align: center;
+        line-height: 200px;
+        border: 2px solid #ccc;
+        cursor: pointer;
+        background-color: white;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        row-gap: 30px;
+
+    }
+
+    #preview_container {
+        text-align: center;
+    }
+
+    #im {
+        padding-top: 70px;
+        font-size: 100px;
+        color: gray;
+    }
+
+    .preview-image {
+        padding-left: 170px;
+        padding-top: 100px;
+    }
+    .section button{
+        display: none;
+        margin-left: 650px;
+        margin-right: 650px;
+        margin-bottom: 40px;
+        color: black;
+        font-weight: 500;
+        font-size: 20px;
+        background-color: #f3c19d;
+        border: solid 1px #ea8d4b;
+    }
+</style>
+
+<body>
+    <h3 class="text">Hello {{userdata.name}}</h3>
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li class="active"><a href="{% url 'Home' userdata.userid %}" class="link"><i class="fa-solid fa-house"></i>Home</a>
+                </li>
+                <li><a href="{% url 'Profile' userdata.userid %}"><i class="fa-solid fa-user"></i>Profile</a></li>
+                <li><a href="{% url 'Point' userdata.userid %}"><i class="fa-solid fa-coins"></i>Points</a></li>
+                <li><a href="{% url 'Task' userdata.userid %}"><i class="fa-solid fa-calendar-check"></i>Task</a></li>
+                <li><a href="{% url 'Index' %}"><i class="fa-solid fa-power-off"></i>Logout</a></li>
+            </ul>
+        </div>
+        <div class="main">
+            <form action="{% url 'Passdata' data.appid userdata.userid %}" method="POST" enctype="multipart/form-data" class="section">
+                {% csrf_token %}
+                <div class="content">
+                    <img src="{{ data.appIcon }}" alt="">
+                    <div class="textval">
+                        <h2>{{data.appName}}</h2>
+                        <a href="{{data.appLink}}">{{data.appLink}}<i class="fa-solid fa-angle-right"></i></a>
+                    </div>
+                    <div class="pointval">
+                        <h3>{{data.points}} POINTS</h3>
+                    </div>
+                </div>
+                <div class="image_drop">
+                    <div id="drop_area">
+                        <i class="fa-solid fa-image" id="im"></i>
+                        <span id="tx">Upload screenshots to complete the Task</span>
+                    </div>
+                    <input type="file" id="file_input" name="img" multiple hidden>
+                    <div id="preview-container"></div>
+                </div>
+                <button type="submit" id="submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    function handleFiles(files) {
+        for (const file of files) {
+            console.log(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function (e) {
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.width = '150'
+                var x = document.getElementById("im");
+                var y = document.getElementById("tx");
+                var z=document.getElementById("submit");
+                x.style.display = "none"
+                y.style.display = "none"
+                z.style.display="block"
+                preview.classList.add('preview-image');
+                const previewContainer = document.getElementById('drop_area');
+                previewContainer.appendChild(preview);
+            };
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            handleFiles(files);
+        }
+    }
+
+    const dropArea = document.getElementById('drop_area');
+    const fileInput = document.getElementById('file_input');
+
+    dropArea.addEventListener('dragover', preventDefaults);
+    dropArea.addEventListener('dragenter', preventDefaults);
+    dropArea.addEventListener('dragleave', preventDefaults);
+    dropArea.addEventListener('drop', handleDrop);
+
+
+
+
+</script>
+
+
+</html>

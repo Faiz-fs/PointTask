@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task-Point</title>
+</head>
+<script src="https://kit.fontawesome.com/c04ff74144.js" crossorigin="anonymous"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #dfe6ed;
+    }
+
+    .text {
+        margin-top: 0;
+        padding: 20px;
+        text-align: center;
+        background-color: #f0f2f5;
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .sidebar {
+        padding-top: 40px;
+        padding-left: 30px;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar ul li {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+
+    }
+
+    .sidebar ul .active {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+        background-color: #6558f5;
+    }
+
+    .sidebar ul li .link {
+        color: white;
+    }
+
+    .sidebar ul li a {
+        text-decoration: none;
+        color: #6558f5;
+        font-size: 18px;
+        padding: 30px;
+    }
+
+    .fa-solid {
+        padding-right: 5px;
+    }
+
+    .main {
+        margin-left: 150px;
+        margin-top: 40px;
+        margin-right: 40px;
+        flex-grow: 1;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        height: 750px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-header {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .profile-info {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .profile-info i {
+        margin-right: 10px;
+        color: #555;
+    }
+
+    .password-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .password-container span {
+        margin-left: 10px;
+        cursor: pointer;
+        color: #555;
+    }
+</style>
+
+<body>
+    <h3 class="text">Hello {{userdata.name}}</h1>
+        <div class="container">
+            <div class="sidebar">
+                <ul>
+                    <li><a href="{% url 'Home' userdata.userid %}"><i class="fa-solid fa-house"></i>Home</a></li>
+                    <li class="active"><a href="{% url 'Profile' userdata.userid %}" class="link"><i
+                                class="fa-solid fa-user"></i>Profile</a></li>
+                    <li><a href="{% url 'Point' userdata.userid %}"><i class="fa-solid fa-coins"></i>Points</a></li>
+                    <li><a href="{% url 'Task' userdata.userid %}"><i class="fa-solid fa-calendar-check"></i>Task</a>
+                    </li>
+                    <li><a href="{% url 'Index' %}"><i class="fa-solid fa-power-off"></i>Logout</a></li>
+                </ul>
+            </div>
+            <div class="main">
+                <div class="profile-header"><i class="fa-solid fa-user"></i> User Profile</div>
+                <div class="profile-info"><i class="fa-solid fa-id-badge"></i> <strong>User ID:</strong>
+                    {{userdata.userid}}</div>
+                <div class="profile-info"><i class="fa-solid fa-user"></i> <strong>Name:</strong> {{userdata.name}}
+                </div>
+                <div class="profile-info"><i class="fa-solid fa-envelope"></i> <strong>Email:</strong>
+                    {{userdata.email}}
+                </div>
+                <div class="profile-info password-container">
+                    <i class="fa-solid fa-key"></i>
+                    <strong>Password:</strong>
+                    <span id="password">{{userdata.password}}</span>
+                    <span id="toggle-password" onclick="togglePasswordVisibility()">
+                        <i class="fa-solid fa-eye"></i>
+                    </span>
+                </div>
+                <div class="profile-info"><i class="fa-solid fa-star"></i> <strong>Points:</strong> {{userdata.points}}
+                </div>
+            </div>
+        </div>
+
+</body>
+<script>
+    function togglePasswordVisibility() {
+        const passwordElement = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggle-password').querySelector('i');
+
+        if (passwordElement.textContent === '***********') {
+            passwordElement.textContent = '{{userdata.password}}';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        } else {
+            passwordElement.textContent = '***********';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        }
+    }
+</script>
+
+</html>

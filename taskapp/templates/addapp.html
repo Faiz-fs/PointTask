@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task-Point</title>
+</head>
+<script src="https://kit.fontawesome.com/c04ff74144.js" crossorigin="anonymous"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #dfe6ed;
+    }
+
+    .text {
+        margin-top: 0;
+        padding: 20px;
+        text-align: center;
+        background-color: #f0f2f5;
+    }
+
+    .container {
+        display: flex;
+    }
+
+    .sidebar {
+        padding-top: 40px;
+        padding-left: 30px;
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar ul li {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+
+    }
+
+    .sidebar ul .active {
+        display: flex;
+        align-items: center;
+        margin: 20px 0;
+        border: solid 2px #6558f5;
+        width: 150px;
+        height: 50px;
+        background-color: #6558f5;
+    }
+
+    .sidebar ul li .link {
+        color: white;
+    }
+
+    .sidebar ul li a {
+        text-decoration: none;
+        color: #6558f5;
+        font-size: 18px;
+        padding: 30px;
+    }
+
+    .fa-solid {
+        padding-right: 5px;
+    }
+
+    .main {
+        padding-left: 50px;
+        margin-left: 150px;
+        margin-top: 40px;
+        margin-right: 40px;
+        flex-grow: 1;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        height: 750px;
+    }
+
+    .image_drop {
+        position: relative;
+        margin: 0 auto;
+        text-align: left;
+        clear: left;
+        height: 150px;
+        z-index: 0;
+    }
+
+    #drop_area {
+        width: 400px;
+        height: 200px;
+        margin: 20px auto;
+        text-align: center;
+        line-height: 200px;
+        cursor: pointer;
+    }
+
+    #drop_area i {
+        font-size: 100px;
+        color: gray;
+    }
+
+    #preview_container {
+        text-align: center;
+    }
+
+    .form_detail {
+        margin-left: 140px;
+        margin-top: 50px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 10px;
+    }
+
+    .form_detail input {
+        height: 30px;
+        width: 200px;
+        margin: 20px 150px;
+        padding-left: 10px;
+    }
+
+    .form_detail select {
+        height: 40px;
+        width: 220px;
+        margin: 20px 150px;
+        padding-left: 10px;
+        background-color: white;
+        border: solid 1px #8f8f9d;
+        border-radius: 2px;
+        color: #8f8f9d;
+
+    }
+
+    .form_details {
+        display: grid;
+        row-gap: 20px;
+        justify-content: center;
+    }
+
+    .form_details input {
+        height: 40px;
+        width: 155px;
+        margin: 20px 150px;
+        padding-left: 50px;
+        background-color: #8dd7cf;
+        border: solid 1px #2bb3a5;
+        color: black;
+        font-weight: 500;
+        font-size: 20px;
+    }
+
+    .form_details input::-webkit-outer-spin-button,
+    .form_details input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .form_details input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .form_details button {
+        height: 40px;
+        width: 210px;
+        margin: 20px 150px;
+        padding-left: 15px;
+        color: black;
+        font-weight: 500;
+        font-size: 20px;
+        background-color: #f3c19d;
+        border: solid 1px #ea8d4b;
+    }
+
+    .error_message {
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    .error_message p {
+        color: red;
+        text-decoration: none;
+    }
+</style>
+
+<body>
+    <h3 class="text">Hello Admin</h1>
+        <div class="container">
+            <div class="sidebar">
+                <ul>
+                    <li><a href="{% url 'Index' %}"><i class="fa-solid fa-house"></i>Home</a></li>
+                    <li class="active"><a href="{% url 'AddApp' %}" class="link"><i class="fa-solid fa-plus"></i>Add
+                            App</a></li>
+                </ul>
+            </div>
+            <form action="{% url 'Update' %}" method="POST" enctype="multipart/form-data" class="main">
+                {% csrf_token %}
+                <div class="image_drop">
+                    <div id="drop_area">
+                        <i class="fa-solid fa-image" id="im"></i>
+                    </div>
+                    <input type="file" id="file_input" name="img" hidden>
+                    <div id="preview_container"></div>
+                </div>
+                <div class="form_detail">
+                    <input type="text" name="name" placeholder="App Name">
+                    <input type="text" name="link" placeholder="App Link">
+                </div>
+                <div class="form_detail">
+                    <select name="Category">
+                        <option value="none" selected disabled hidden>App Category</option>
+                        <option value="Android Wear">Android Wear</option>
+                        <option value="Art & Design">Art & Design</option>
+                        <option value="Communication">Communication</option>
+                        <option value="Education">Education</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Health & Fitness">Health & Fitness</option>
+                        <option value="Social">Social</option>
+                        <option value="Productivity">Productivity</option>
+                    </select>
+                    <select name="SubCategory">
+                        <option value="none" selected disabled hidden>Sub Category</option>
+                        <option value="Android Wear">Health & Fitness</option>
+                        <option value="Art & Design">Paint</option>
+                        <option value="Communication">Networking</option>
+                        <option value="Education">Bussiness</option>
+                        <option value="Entertainment">Coding</option>
+                        <option value="Health & Fitness">Learning</option>
+                        <option value="Social">Professional</option>
+                        <option value="Productivity">Utility</option>
+                    </select>
+                </div>
+                <div class="form_details">
+                    <input type="number" name="point" placeholder="ADD POINTS">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+            <div class="error_message">
+                {% if error %}
+                <p>{{ error }}</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+</body>
+
+<script type="text/javascript">
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    function handleFiles(files) {
+        for (const file of files) {
+            console.log(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function (e) {
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.width = '150'
+                var x = document.getElementById("im");
+                x.style.display = "none"
+                preview.classList.add('preview-image');
+                const previewContainer = document.getElementById('drop_area');
+                previewContainer.appendChild(preview);
+            };
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            handleFiles(files);
+        }
+    }
+
+    const dropArea = document.getElementById('drop_area');
+    const fileInput = document.getElementById('file_input');
+
+    dropArea.addEventListener('dragover', preventDefaults);
+    dropArea.addEventListener('dragenter', preventDefaults);
+    dropArea.addEventListener('dragleave', preventDefaults);
+    dropArea.addEventListener('drop', handleDrop);
+
+
+
+
+</script>
+
+</html>
