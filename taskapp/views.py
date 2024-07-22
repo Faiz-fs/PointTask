@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
-import requests
 from django.conf import settings
-
+import httpx
 
 # Create your views here.
 
@@ -12,33 +11,36 @@ def index(request):
 
 
 # View to render the home page with user and app data
-def home(request, usr):
-    response = requests.get(f"{settings.API_URL}/app/")
-    # print(response.json())
-    userrep = requests.get(f"{settings.API_URL}/user/{usr}")
-    # print(userrep.json())
+async def home(request, usr):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{settings.API_URL}/app/")
+        userrep = await client.get(f"{settings.API_URL}/user/{usr}")
     return render(
         request, "home.html", {"data": response.json(), "userdata": userrep.json()}
     )
 
 
 # View to render the user profile page
-def profile(request, usr):
-    userrep = requests.get(f"{settings.API_URL}/user/{usr}")
+async def profile(request, usr):
+    async with httpx.AsyncClient() as client:
+        userrep = await client.get(f"{settings.API_URL}/user/{usr}")
     return render(request, "profile.html", {"userdata": userrep.json()})
 
 
 # View to render the user points page
-def point(request, usr):
-    userrep = requests.get(f"{settings.API_URL}/user/{usr}")
+async def point(request, usr):
+    async with httpx.AsyncClient() as client:
+        userrep = await client.get(f"{settings.API_URL}/user/{usr}")
     return render(request, "point.html", {"userdata": userrep.json()})
 
 
 # View to render the task page with user tasks
-def task(request, usr):
-    userrep = requests.get(f"{settings.API_URL}/user/{usr}")
-    taskdata = requests.get(f"{settings.API_URL}/quest/")
-    appdata = requests.get(f"{settings.API_URL}/app/")
+async def task(request, usr):
+    async with httpx.AsyncClient() as client:
+        userrep = await client.get(f"{settings.API_URL}/user/{usr}")
+        taskdata = await client.get(f"{settings.API_URL}/quest/")
+        appdata = await client.get(f"{settings.API_URL}/app/")
+    
     app = []
     data = []
     for val in taskdata.json():
@@ -61,30 +63,31 @@ def addapp(request):
 
 
 # View to render the app details page
-def details(request, id, usr):
-    response = requests.get(f"{settings.API_URL}/app/{id}")
-    userrep = requests.get(f"{settings.API_URL}/user/{usr}")
+async def details(request, id, usr):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{settings.API_URL}/app/{id}")
+        userrep = await client.get(f"{settings.API_URL}/user/{usr}")
     return render(
         request, "details.html", {"data": response.json(), "userdata": userrep.json()}
     )
 
 
 # View to pass data to another page
-def passdata(request, id, usr):
+async def passdata(request, id, usr):
     if request.method == "POST":
         img = request.FILES.get("img")
-        response = requests.get(f"{settings.API_URL}/app/{id}")
-        userrep = requests.get(f"{settings.API_URL}/user/{usr}")
-        usrdata = userrep.json()
-        appdata = response.json()
-        usrdata["points"] += appdata["points"]
-        print(usrdata)
-        taskdata = {"appid": id, "userid": usr, "taskname": appdata["appName"]}
-        taskfile = {"appIcon": img}
-        userpost = requests.put(f"{settings.API_URL}/user/{usr}", data=usrdata)
-        taskpost = requests.post(
-            f"{settings.API_URL}/quest/", data=taskdata, files=taskfile
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{settings.API_URL}/app/{id}")
+            userrep = await client.get(f"{settings.API_URL}/user/{usr}")
+            usrdata = userrep.json()
+            appdata = response.json()
+            usrdata["points"] += appdata["points"]
+            taskdata = {"appid": id, "userid": usr, "taskname": appdata["appName"]}
+            taskfile = {"appIcon": img}
+            userpost = await client.put(f"{settings.API_URL}/user/{usr}", data=usrdata)
+            taskpost = await client.post(
+                f"{settings.API_URL}/quest/", data=taskdata, files=taskfile
+            )
         if userpost.status_code == 200 and taskpost.status_code == 201:
             return redirect("Home", usr)
         else:
@@ -106,13 +109,14 @@ def signin(request):
 
 
 # View to handle adding a new user
-def adduser(request):
+async def adduser(request):
     if request.method == "POST":
         name = request.POST.get("name")
         email = request.POST.get("email")
         password = request.POST.get("password")
         data = {"name": name, "email": email, "password": password, "points": 50}
-        userrep = requests.post(f"{settings.API_URL}/user/", data=data)
+        async with httpx.AsyncClient() as client:
+            userrep = await client.post(f"{settings.API_URL}/user/", data=data)
         if userrep.status_code == 201:
             return redirect("Index")
         else:
@@ -133,7 +137,7 @@ def access(request):
 
 
 # View to handle app updates
-def update(request):
+async def update(request):
     if request.method == "POST":
         name = request.POST.get("name")
         link = request.POST.get("link")
@@ -141,7 +145,6 @@ def update(request):
         subcat = request.POST.get("SubCategory")
         point = request.POST.get("point")
         img = request.FILES.get("img")
-        print(name, link, cat, subcat, point, img)
         data = {
             "appName": name,
             "appLink": link,
@@ -150,7 +153,8 @@ def update(request):
             "points": point,
         }
         files = {"appIcon": img}
-        response = requests.post(f"{settings.API_URL}/app/", data=data, files=files)
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f"{settings.API_URL}/app/", data=data, files=files)
         if response.status_code == 201:
             return redirect("AddApp")
         else:
@@ -158,11 +162,12 @@ def update(request):
 
 
 # View to handle user login
-def login(request):
+async def login(request):
     if request.method == "POST":
         user = request.POST.get("User")
         pswd = request.POST.get("Pswd")
-        response = requests.get(f"https://pointtask.onrender.com/api/user/", timeout=100)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{settings.API_URL}/user/")
         for val in response.json():
             if val["email"] == user and val["password"] == pswd:
                 return redirect("Home", usr=val["userid"])
