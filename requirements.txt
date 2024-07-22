@@ -1,6 +1,6 @@
 Django
 djangorestframework
-requests
+requests==2.31.0
 gunicorn
 Pillow
 whitenoise
