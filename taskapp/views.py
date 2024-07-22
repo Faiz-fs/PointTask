@@ -162,7 +162,7 @@ def login(request):
     if request.method == "POST":
         user = request.POST.get("User")
         pswd = request.POST.get("Pswd")
-        response = requests.get(f"{settings.API_URL}/user/")
+        response = requests.get(f"https://pointtask.onrender.com/api/user/")
         for val in response.json():
             if val["email"] == user and val["password"] == pswd:
                 return redirect("Home", usr=val["userid"])
